@@ -1,17 +1,13 @@
-```Este é o template básico do relatório do curso. Fique à vontade para adicionar mais tópicos, mas preencha todos os tópicos que estão aqui! Este documento está em markdown, mas fique à vontade para criar um documento de texto, desde que contenha os mesmos tópicos. Sugerimos que subam o código e o relatório (como README.md) no github ou, caso não seja possível, código e github como uma pasta zipada no final do curso.```
-
-
 <p align="center">
   <img src="https://media.elektor.com/media/catalog/product/cache/9cc822bfc6a57f9729d464b8b5e0e0df/j/o/joy-it-nodemcu-esp32-development-board_front.png" width="300" /><br/>
-Nome do projeto <br/>
+Caixinha de Música <br/>
 </p>
 
 <br/>
 
 ## :pushpin: Descrição
 
-O que é o seu projeto? Qual o objetivo do sistema?
-Não precisa colocar muitas informações técnicas aqui, só deixe sua ideia clara :)
+Nosso projeto é uma caixinha de música em que um buzzer emite as notas musicais em forma de beep (leia-se "campainha") e uma bailarina gira a partir de um motor rotacional. O objetivo do projeto era trabalhar com música a partir de uma união entre o clássico da caixinha de música com o moderno das possibilidades que a tecnologia tem a oferecer. Assim, projetamos uma caixinha de som em que se escolhe a música a partir de um site no aparelho celular do usuário.
 
 
 <br/>
@@ -23,51 +19,37 @@ Não precisa colocar muitas informações técnicas aqui, só deixe sua ideia cl
 | Quantidade | Nome | Link para referência |
 | --- | --- | --- |
 | 1 | ESP32 e cabo USB | https://www.baudaeletronica.com.br/placa-doit-esp32-bluetooth-e-wifi.html |
-| 4 | Sensor de Toque Touch Capacitivo TTP223B | https://www.baudaeletronica.com.br/sensor-touch-capacitivo-ttp223b.html |
-| 4 | Sensor de Temperatura Digital DS18B20 tipo TO92 | https://www.baudaeletronica.com.br/sensor-de-temperatura-digital-ds18b20.html |
+| 4 | Buzzer Ativo Programável | https://www.eletrogate.com/buzzer-ativo-5v?utm_source=Site&utm_medium=GoogleMerchant&utm_campaign=GoogleMerchant&gad=1&gclid=Cj0KCQjwk96lBhDHARIsAEKO4xauBy1Zdvprys4j1ThOaqRjedv45X4-ec5x3n0ZeytOvHP0reTzkQkaAu_0EALw_wcB |
+| 4 | Motor Rf Rotativo | https://produto.mercadolivre.com.br/MLB-3379691027-motor-rf-300-para-robotica-dvd-playstation-59v-6600rpm-_JM?matt_tool=63064967&matt_word=&matt_source=google&matt_campaign_id=14303413826&matt_ad_group_id=133431076203&matt_match_type=&matt_network=g&matt_device=c&matt_creative=584156655540&matt_keyword=&matt_ad_position=&matt_ad_type=pla&matt_merchant_id=5069482700&matt_product_id=MLB3379691027&matt_product_partition_id=310365260760&matt_target_id=pla-310365260760&gclid=Cj0KCQjwk96lBhDHARIsAEKO4 |
 | X | Jumpers variados | --- |
 | 1 | Protoboard | --- |
-| 1 | Resistor 100 ohms | --- |
 | 1 | Fonte de alimentação - PowerBank | https://www.americanas.com.br/produto/2706391331 |
 
 ### Lista de conexões
 
 | Componente | Pino da placa |
 | --- | --- |
-| Sensor de Toque A | 21 |
-| Sensor de Toque B | 19 |
-| Sensor de Toque C | 23 |
-| Sensor de Toque D | 22 |
-| Sensores de temperatura | 4 |
+| Buzzer | 13 |
+| Motor | esp: VIN, protoboard 25 - |
 
 
 ### Funcionamento dos sensores e atuadores
 
-#### Sensor de temperatura DS18B20 tipo TO92
-
-O DS18B20 é um sensor de temperatural digital que realiza medições na faixa de -55°C até 125°C em graus celsius sem a necessidade de um componente externo para isso. O sensor utiliza o protocolo One-Wire, ou seja, sua comunicação é feita por um único fio de dados (além do VCC e GND), além de possuir um código ID próprio de 64 bits, permitindo a conexão de até 127 sensores num mesmo barramento com endereços diferentes, poupando espaço do projeto. (Especificação técnica: https://www.curtocircuito.com.br/datasheet/sensor/temperatura_DS18B20.pdf)
-
-Este sensor posui precisão de mais ou menos 0,5°C na faixa de medição de -10°C até 85°C. Suas principais características são: 
-- Chip: DS18B20;
-- Tensão de operação: 3 a 5VDC;
-- Consumo: 1,5mA;
-- Comunicação: 1 fio;
-- Faixa de medição: -55° a 125°C;
-- Resolução de saída: 9 a 12 bits (programável);
-- Tempo de conversão: 750ms (12-bits);
-- Precisão: ±0,5 entre -10°C e 85°C;
+#### Buzzer Ativo Programável:
 
 
-#### Sensor de toque TTP223B
 
-O sensor digital de toque TTP223B é de simples funcionamento, mudando o sinal quando há um toque. Sua tensão de operação é entre 2-5, 5V; a saída de estado alto é 0,8V e baixo de 0,3 V. O tempo de resposta é de 220 ms (em estado baixo) e 60 ms (em estado alto), contando com as dimensões de 24 x 24 x 7,2 mm (Especificação técnica: https://files.seeedstudio.com/wiki/Grove-Touch_Sensor/res/TTP223.pdf)
+
+#### Motor Rf Rotativo
+
+
 
 
 ### Circuito
 
 <p align="center">
 Figura - Diagrama do circuito<br/>
-  <img src="https://github.com/Anemaygi/SMAC/blob/master/src/circuitoa.png" width="400" /><br/>
+  <img src= ![WhatsApp Image 2023-07-19 at 16 22 37](https://github.com/RafaCaminag/CaixaDeMusica/assets/131477600/2027d958-ef54-41f1-92a4-34b8c070e793) /><br/>
 </p>
 Informações importantes sobre o circuito, onde colocá-lo, entre outros.
 <br/>
