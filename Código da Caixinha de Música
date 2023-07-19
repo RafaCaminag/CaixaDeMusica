@@ -1,0 +1,529 @@
+from machine import Pin, PWM
+import time
+import socket
+import network
+import esp
+import gc
+
+# Define a frequência de cada nota
+B1  = 31
+C2  = 33
+CS2 = 35
+D2  = 37
+DS2 = 39
+E2  = 41
+F2  = 44
+FS2 = 46
+G2  = 49
+GS2 = 52
+A2  = 55
+AS2 = 58
+B2  = 62
+C3  = 65
+CS3 = 69
+D3  = 73
+DS3 = 78
+E3  = 82
+F3  = 87
+FS3 = 93
+G3  = 98
+GS3 = 104
+A3  = 110
+AS3 = 117
+B3  = 123
+C4  = 131
+CS4 = 139
+D4  = 147
+DS4 = 156
+E4  = 165
+F4  = 175
+FS4 = 185
+G4  = 196
+GS4 = 208
+A4  = 220
+AS4 = 233
+B4  = 247
+C5  = 262
+CS5 = 277
+D5  = 294
+DS5 = 311
+E5  = 330
+F5  = 349
+FS5 = 370
+G5  = 392
+GS5 = 415
+A5  = 440
+AS5 = 466
+B5  = 494
+C6  = 523
+CS6 = 554
+D6  = 587
+DS6 = 622
+E6  = 659
+F6  = 698
+FS6 = 740
+G6  = 784
+GS6 = 831
+A6  = 880
+AS6 = 932
+B6  = 988
+C7  = 1047
+CS7 = 1109
+D7  = 1175
+DS7 = 1245
+E7  = 1319
+F7  = 1397
+FS7 = 1480
+G7  = 1568
+GS7 = 1661
+A7  = 1760
+AS7 = 1865
+B7  = 1976
+C8  = 2093
+CS8 = 2217
+D8  = 2349
+DS8 = 2489
+E8  = 2637
+F8  = 2794
+FS8 = 2960
+G8  = 3136
+GS8 = 3322
+A8  = 3520
+AS8 = 3729
+B8  = 3951
+C9  = 4186
+CS9 = 4435
+D9  = 4699
+DS9 = 4978
+P = 0
+
+# Super Mario - Main Theme:d=4,o=5,b=125:a,8f.,16c,16d,16f,16p,f,16d,16c,16p,16f,16p,16f,16p,8c6,8a.,g,16c,a,8f.,16c,16d,16f,16p,f,16d,16c,16p,16f,16p,16a#,16a,16g,2f,16p,8a.,8f.,8c,8a.,f,16g#,16f,16c,16p,8g#.,2g,8a.,8f.,8c,8a.,f,16g#,16f,8c,2c6
+
+def RTTTL(text):
+    try:
+        title, defaults, song = text.split(':')
+        d, o, b = defaults.split(',')
+        d = int(d.split('=')[1])
+        o = int(o.split('=')[1])
+        b = int(b.split('=')[1])
+        whole = (60000/b)*4
+        noteList = song.split(',')
+    except:
+        return 'Please enter a valid RTTTL string.'
+    notes = 'abcdefgp'
+    outList = []
+    for note in noteList:
+        index = 0
+        for i in note:
+            if i in notes:
+                index = note.find(i)
+                break
+        length = note[0:index]
+        value = note[index:].replace('#','s').replace('.','')
+        if not any(char.isdigit() for char in value):
+            value += str(o)
+        if 'p' in value:
+            value = 'p'
+        if length == '':
+            length = d
+        else:
+            length = int(length)
+        length = whole/length
+        if '.' in note:
+            length += length/2
+        outList.append((eval(value.upper()), length))
+    return outList
+
+def play(pin, tune):
+    tune = RTTTL(tune)
+    if type(tune) is not list:
+        return tune
+    for freqc, msec in tune:
+        msec = msec * 0.001
+        if freqc > 0:
+            pwm0 = PWM(pin, freq=freqc, duty=50)
+        time.sleep(msec*0.9)
+        if freqc > 0:
+            pwm0.deinit()
+        time.sleep(msec*0.1)
+        
+# The following RTTTL tunes were extracted from the following:
+# https://github.com/onebeartoe/media-players/blob/master/pi-ezo/src/main/java/org/onebeartoe/media/piezo/ports/rtttl/BuiltInSongs.java
+# most of which originated from here:
+# http://www.picaxe.com/RTTTL-Ringtones-for-Tune-Command/
+#
+
+SONGS = [
+    'Super Mario - Main Theme:d=4,o=5,b=125:a,8f.,16c,16d,16f,16p,f,16d,16c,16p,16f,16p,16f,16p,8c6,8a.,g,16c,a,8f.,16c,16d,16f,16p,f,16d,16c,16p,16f,16p,16a#,16a,16g,2f,16p,8a.,8f.,8c,8a.,f,16g#,16f,16c,16p,8g#.,2g,8a.,8f.,8c,8a.,f,16g#,16f,8c,2c6',
+    'Super Mario - Title Music:d=4,o=5,b=125:8d7,8d7,8d7,8d6,8d7,8d7,8d7,8d6,2d#7,8d7,p,32p,8d6,8b6,8b6,8b6,8d6,8b6,8b6,8b6,8d6,8b6,8b6,8b6,16b6,16c7,b6,8a6,8d6,8a6,8a6,8a6,8d6,8a6,8a6,8a6,8d6,8a6,8a6,8a6,16a6,16b6,a6,8g6,8d6,8b6,8b6,8b6,8d6,8b6,8b6,8b6,8d6,8b6,8b6,8b6,16a6,16b6,c7,e7,8d7,8d7,8d7,8d6,8c7,8c7,8c7,8f#6,2g6',
+    'SMBtheme:d=4,o=5,b=100:16e6,16e6,32p,8e6,16c6,8e6,8g6,8p,8g,8p,8c6,16p,8g,16p,8e,16p,8a,8b,16a#,8a,16g.,16e6,16g6,8a6,16f6,8g6,8e6,16c6,16d6,8b,16p,8c6,16p,8g,16p,8e,16p,8a,8b,16a#,8a,16g.,16e6,16g6,8a6,16f6,8g6,8e6,16c6,16d6,8b,8p,16g6,16f#6,16f6,16d#6,16p,16e6,16p,16g#,16a,16c6,16p,16a,16c6,16d6,8p,16g6,16f#6,16f6,16d#6,16p,16e6,16p,16c7,16p,16c7,16c7,p,16g6,16f#6,16f6,16d#6,16p,16e6,16p,16g#,16a,16c6,16p,16a,16c6,16d6,8p,16d#6,8p,16d6,8p,16c6',
+    'SMBwater:d=8,o=6,b=225:4d5,4e5,4f#5,4g5,4a5,4a#5,b5,b5,b5,p,b5,p,2b5,p,g5,2e.,2d#.,2e.,p,g5,a5,b5,c,d,2e.,2d#,4f,2e.,2p,p,g5,2d.,2c#.,2d.,p,g5,a5,b5,c,c#,2d.,2g5,4f,2e.,2p,p,g5,2g.,2g.,2g.,4g,4a,p,g,2f.,2f.,2f.,4f,4g,p,f,2e.,4a5,4b5,4f,e,e,4e.,b5,2c.',
+    'SMBunderground:d=16,o=6,b=100:c,c5,a5,a,a#5,a#,2p,8p,c,c5,a5,a,a#5,a#,2p,8p,f5,f,d5,d,d#5,d#,2p,8p,f5,f,d5,d,d#5,d#,2p,32d#,d,32c#,c,p,d#,p,d,p,g#5,p,g5,p,c#,p,32c,f#,32f,32e,a#,32a,g#,32p,d#,b5,32p,a#5,32p,a5,g#5',
+    'Picaxe:d=4,o=6,b=101:g5,c,8c,c,e,d,8c,d,8e,8d,c,8c,e,g,2a,a,g,8e,e,c,d,8c,d,8e,8d,c,8a5,a5,g5,2c',
+    'The Simpsons:d=4,o=5,b=160:c.6,e6,f#6,8a6,g.6,e6,c6,8a,8f#,8f#,8f#,2g,8p,8p,8f#,8f#,8f#,8g,a#.,8c6,8c6,8c6,c6',
+    'Indiana:d=4,o=5,b=250:e,8p,8f,8g,8p,1c6,8p.,d,8p,8e,1f,p.,g,8p,8a,8b,8p,1f6,p,a,8p,8b,2c6,2d6,2e6,e,8p,8f,8g,8p,1c6,p,d6,8p,8e6,1f.6,g,8p,8g,e.6,8p,d6,8p,8g,e.6,8p,d6,8p,8g,f.6,8p,e6,8p,8d6,2c6',
+    'TakeOnMe:d=4,o=4,b=160:8f#5,8f#5,8f#5,8d5,8p,8b,8p,8e5,8p,8e5,8p,8e5,8g#5,8g#5,8a5,8b5,8a5,8a5,8a5,8e5,8p,8d5,8p,8f#5,8p,8f#5,8p,8f#5,8e5,8e5,8f#5,8e5,8f#5,8f#5,8f#5,8d5,8p,8b,8p,8e5,8p,8e5,8p,8e5,8g#5,8g#5,8a5,8b5,8a5,8a5,8a5,8e5,8p,8d5,8p,8f#5,8p,8f#5,8p,8f#5,8e5,8e5',
+    'Entertainer:d=4,o=5,b=140:8d,8d#,8e,c6,8e,c6,8e,2c.6,8c6,8d6,8d#6,8e6,8c6,8d6,e6,8b,d6,2c6,p,8d,8d#,8e,c6,8e,c6,8e,2c.6,8p,8a,8g,8f#,8a,8c6,e6,8d6,8c6,8a,2d6',
+    'Muppets:d=4,o=5,b=250:c6,c6,a,b,8a,b,g,p,c6,c6,a,8b,8a,8p,g.,p,e,e,g,f,8e,f,8c6,8c,8d,e,8e,8e,8p,8e,g,2p,c6,c6,a,b,8a,b,g,p,c6,c6,a,8b,a,g.,p,e,e,g,f,8e,f,8c6,8c,8d,e,8e,d,8d,c',
+    'Xfiles:d=4,o=5,b=125:e,b,a,b,d6,2b.,1p,e,b,a,b,e6,2b.,1p,g6,f#6,e6,d6,e6,2b.,1p,g6,f#6,e6,d6,f#6,2b.,1p,e,b,a,b,d6,2b.,1p,e,b,a,b,e6,2b.,1p,e6,2b.',
+    'Looney:d=4,o=5,b=140:32p,c6,8f6,8e6,8d6,8c6,a.,8c6,8f6,8e6,8d6,8d#6,e.6,8e6,8e6,8c6,8d6,8c6,8e6,8c6,8d6,8a,8c6,8g,8a#,8a,8f',
+    '20thCenFox:d=16,o=5,b=140:b,8p,b,b,2b,p,c6,32p,b,32p,c6,32p,b,32p,c6,32p,b,8p,b,b,b,32p,b,32p,b,32p,b,32p,b,32p,b,32p,b,32p,g#,32p,a,32p,b,8p,b,b,2b,4p,8e,8g#,8b,1c#6,8f#,8a,8c#6,1e6,8a,8c#6,8e6,1e6,8b,8g#,8a,2b',
+    'Bond:d=4,o=5,b=80:32p,16c#6,32d#6,32d#6,16d#6,8d#6,16c#6,16c#6,16c#6,16c#6,32e6,32e6,16e6,8e6,16d#6,16d#6,16d#6,16c#6,32d#6,32d#6,16d#6,8d#6,16c#6,16c#6,16c#6,16c#6,32e6,32e6,16e6,8e6,16d#6,16d6,16c#6,16c#7,c.7,16g#6,16f#6,g#.6',
+    'MASH:d=8,o=5,b=140:4a,4g,f#,g,p,f#,p,g,p,f#,p,2e.,p,f#,e,4f#,e,f#,p,e,p,4d.,p,f#,4e,d,e,p,d,p,e,p,d,p,2c#.,p,d,c#,4d,c#,d,p,e,p,4f#,p,a,p,4b,a,b,p,a,p,b,p,2a.,4p,a,b,a,4b,a,b,p,2a.,a,4f#,a,b,p,d6,p,4e.6,d6,b,p,a,p,2b',
+    'StarWars:d=4,o=5,b=45:32p,32f#,32f#,32f#,8b.,8f#.6,32e6,32d#6,32c#6,8b.6,16f#.6,32e6,32d#6,32c#6,8b.6,16f#.6,32e6,32d#6,32e6,8c#.6,32f#,32f#,32f#,8b.,8f#.6,32e6,32d#6,32c#6,8b.6,16f#.6,32e6,32d#6,32c#6,8b.6,16f#.6,32e6,32d#6,32e6,8c#6',
+    'GoodBad:d=4,o=5,b=56:32p,32a#,32d#6,32a#,32d#6,8a#.,16f#.,16g#.,d#,32a#,32d#6,32a#,32d#6,8a#.,16f#.,16g#.,c#6,32a#,32d#6,32a#,32d#6,8a#.,16f#.,32f.,32d#.,c#,32a#,32d#6,32a#,32d#6,8a#.,16g#.,d#',
+    'TopGun:d=4,o=4,b=31:32p,16c#,16g#,16g#,32f#,32f,32f#,32f,16d#,16d#,32c#,32d#,16f,32d#,32f,16f#,32f,32c#,16f,d#,16c#,16g#,16g#,32f#,32f,32f#,32f,16d#,16d#,32c#,32d#,16f,32d#,32f,16f#,32f,32c#,g#',
+    'A-Team:d=8,o=5,b=125:4d#6,a#,2d#6,16p,g#,4a#,4d#.,p,16g,16a#,d#6,a#,f6,2d#6,16p,c#.6,16c6,16a#,g#.,2a#',
+    'Flinstones:d=4,o=5,b=40:32p,16f6,16a#,16a#6,32g6,16f6,16a#.,16f6,32d#6,32d6,32d6,32d#6,32f6,16a#,16c6,d6,16f6,16a#.,16a#6,32g6,16f6,16a#.,32f6,32f6,32d#6,32d6,32d6,32d#6,32f6,16a#,16c6,a#,16a6,16d.6,16a#6,32a6,32a6,32g6,32f#6,32a6,8g6,16g6,16c.6,32a6,32a6,32g6,32g6,32f6,32e6,32g6,8f6,16f6,16a#.,16a#6,32g6,16f6,16a#.,16f6,32d#6,32d6,32d6,32d#6,32f6,16a#,16c.6,32d6,32d#6,32f6,16a#,16c.6,32d6,32d#6,32f6,16a#6,16c7,8a#.6',
+    'Jeopardy:d=4,o=6,b=125:c,f,c,f5,c,f,2c,c,f,c,f,a.,8g,8f,8e,8d,8c#,c,f,c,f5,c,f,2c,f.,8d,c,a#5,a5,g5,f5,p,d#,g#,d#,g#5,d#,g#,2d#,d#,g#,d#,g#,c.7,8a#,8g#,8g,8f,8e,d#,g#,d#,g#5,d#,g#,2d#,g#.,8f,d#,c#,c,p,a#5,p,g#.5,d#,g#',
+    'Gadget:d=16,o=5,b=50:32d#,32f,32f#,32g#,a#,f#,a,f,g#,f#,32d#,32f,32f#,32g#,a#,d#6,4d6,32d#,32f,32f#,32g#,a#,f#,a,f,g#,f#,8d#',
+    'Smurfs:d=32,o=5,b=200:4c#6,16p,4f#6,p,16c#6,p,8d#6,p,8b,p,4g#,16p,4c#6,p,16a#,p,8f#,p,8a#,p,4g#,4p,g#,p,a#,p,b,p,c6,p,4c#6,16p,4f#6,p,16c#6,p,8d#6,p,8b,p,4g#,16p,4c#6,p,16a#,p,8b,p,8f,p,4f#',
+    'MahnaMahna:d=16,o=6,b=125:c#,c.,b5,8a#.5,8f.,4g#,a#,g.,4d#,8p,c#,c.,b5,8a#.5,8f.,g#.,8a#.,4g,8p,c#,c.,b5,8a#.5,8f.,4g#,f,g.,8d#.,f,g.,8d#.,f,8g,8d#.,f,8g,d#,8c,a#5,8d#.,8d#.,4d#,8d#.',
+    'LeisureSuit:d=16,o=6,b=56:f.5,f#.5,g.5,g#5,32a#5,f5,g#.5,a#.5,32f5,g#5,32a#5,g#5,8c#.,a#5,32c#,a5,a#.5,c#.,32a5,a#5,32c#,d#,8e,c#.,f.,f.,f.,f.,f,32e,d#,8d,a#.5,e,32f,e,32f,c#,d#.,c#',
+    'MissionImp:d=16,o=6,b=95:32d,32d#,32d,32d#,32d,32d#,32d,32d#,32d,32d,32d#,32e,32f,32f#,32g,g,8p,g,8p,a#,p,c7,p,g,8p,g,8p,f,p,f#,p,g,8p,g,8p,a#,p,c7,p,g,8p,g,8p,f,p,f#,p,a#,g,2d,32p,a#,g,2c#,32p,a#,g,2c,a#5,8c,2p,32p,a#5,g5,2f#,32p,a#5,g5,2f,32p,a#5,g5,2e,d#,8d',
+]
+
+def find(name):
+    for song in SONGS:
+        song_name = song.split(':')[0]
+        if song_name == name:
+            return song
+
+motor = Pin(4, Pin.OUT)
+
+class ESPServer:
+    def __init__(self):
+        esp.osdebug(None)
+        gc.collect()
+        self.station = network.WLAN(network.STA_IF)
+        self.station.active(True)
+        self.music = ""
+    def connect (self, ssid, password):
+        self.station.connect(ssid, password)
+        while self.station.isconnected() == False:
+            pass
+        print('connection successful')
+        print(self.station.ifconfig())
+    def web_page(self):
+        html = """<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      * {
+        margin: 0px;
+        padding: 0px;
+      }
+      body {
+        background-color: aqua;
+      }
+      h1,
+      h2 {
+        padding-top: 5px;
+        text-align: center;
+      }
+      div {
+        width: auto;
+        text-align: center;
+        padding: 10px;
+      }
+      img {
+        width: 35%;
+        height: 35%;
+      }
+      button {
+        align-items: center;
+        background-color: #ffffff;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: 0.25rem;
+        box-shadow: rgba(0, 0, 0, 0.02) 0 1px 3px 0;
+        box-sizing: border-box;
+        color: rgba(0, 0, 0, 0.85);
+        cursor: pointer;
+        display: inline-flex;
+        font-family: system-ui, -apple-system, system-ui, "Helvetica Neue",
+          Helvetica, Arial, sans-serif;
+        font-size: 16px;
+        font-weight: 600;
+        justify-content: center;
+        line-height: 1.25;
+        margin: 0;
+        min-height: 3rem;
+        padding: calc(0.875rem - 1px) calc(1.5rem - 1px);
+        position: relative;
+        text-decoration: none;
+        transition: all 250ms;
+        user-select: none;
+        -webkit-user-select: none;
+        touch-action: manipulation;
+        vertical-align: baseline;
+        width: auto;
+      }
+
+      .button:hover,
+      .button:focus {
+        border-color: rgba(0, 0, 0, 0.15);
+        box-shadow: rgba(0, 0, 0, 0.1) 0 4px 12px;
+        color: rgba(0, 0, 0, 0.65);
+      }
+
+      .button:hover {
+        transform: translateY(-1px);
+      }
+
+      .button:active {
+        background-color: #f0f0f1;
+        border-color: rgba(0, 0, 0, 0.15);
+        box-shadow: rgba(0, 0, 0, 0.06) 0 2px 4px;
+        color: rgba(0, 0, 0, 0.65);
+        transform: translateY(0);
+      }
+
+      .container {
+        display: flex;
+        gap: 8px;
+        padding: 10px;
+        flex-flow: row wrap;
+        justify-content: center;
+      }
+    </style>
+    <title>Music</title>
+  </head>
+  <body>
+    <h1>Vitrola</h1>
+    <h2>Selecione sua música</h2>
+    <div class="image-vitrola">
+      <img
+        src="https://s2.glbimg.com/uZ0I0_ESHlGFrwNGcuw8xoc0W4M=/smart/e.glbimg.com/og/ed/f/original/2020/05/07/discos_site.gif"
+        alt="vitrola" />
+    </div>
+    <br />
+    <div class="container">
+      <p>
+        <a href="/?music=Super Mario - Main Theme"
+          ><button class="button">Super Mario - Main Theme</button></a
+        >
+      </p>
+      <p>
+        <a href="/?music=Super Mario - Title Music"
+          ><button class="button">Super Mario - Title Music</button></a
+        >
+      </p>
+      <p>
+        <a href="/?music=SMBtheme"
+          ><button class="button">Super Mario Bros - Theme</button></a
+        >
+      </p>
+      <p>
+        <a href="/?music=SMBwater"
+          ><button class="button">Super Mario Bros - Water</button></a
+        >
+      </p>
+      <p>
+        <a href="/?music=SMBunderground"
+          ><button class="button">Super Mario Bros - Bunderground</button></a
+        >
+      </p>
+      <p>
+        <a href="/?music=Picaxe"><button class="button">Picaxe</button></a>
+      </p>
+      <p>
+        <a href="/?music=TheSimpsons"
+          ><button class="button">The Simpsons</button></a
+        >
+      </p>
+      <p>
+        <a href="/?music=Indiana"><button class="button">Indiana</button></a>
+      </p>
+      <p>
+        <a href="/?music=TakeOnMe"><button class="button">TakeOnMe</button></a>
+      </p>
+      <p>
+        <a href="/?music=Entertainer"
+          ><button class="button">Entertainer</button></a
+        >
+      </p>
+      <p>
+        <a href="/?music=Muppets"><button class="button">Muppets</button></a>
+      </p>
+      <p>
+        <a href="/?music=Xfiles"><button class="button">Xfiles</button></a>
+      </p>
+      <p>
+        <a href="/?music=Looney"><button class="button">Looney</button></a>
+      </p>
+      <p>
+        <a href="/?music=20thCenFox"
+          ><button class="button">20thCenFox</button></a
+        >
+      </p>
+      <p>
+        <a href="/?music=Bond"><button class="button">Bond</button></a>
+      </p>
+      <p>
+        <a href="/?music=MASH"><button class="button">MASH</button></a>
+      </p>
+      <p>
+        <a href="/?music=StarWars"><button class="button">StarWars</button></a>
+      </p>
+      <p>
+        <a href="/?music=GoodBad"><button class="button">GoodBad</button></a>
+      </p>
+      <p>
+        <a href="/?music=TopGun"><button class="button">TopGun</button></a>
+      </p>
+      <p>
+        <a href="/?music=A-Team"><button class="button">A-Team</button></a>
+      </p>
+      <p>
+        <a href="/?music=Flinstones"
+          ><button class="button">Flinstones</button></a
+        >
+      </p>
+      <p>
+        <a href="/?music=Jeopardy"><button class="button">Jeopardy</button></a>
+      </p>
+      <p>
+        <a href="/?music=Gadget"><button class="button">Gadget</button></a>
+      </p>
+      <p>
+        <a href="/?music=Smurfs"><button class="button">Smurfs</button></a>
+      </p>
+      <p>
+        <a href="/?music=MahnaMahna"
+          ><button class="button">MahnaMahna</button></a
+        >
+      </p>
+      <p>
+        <a href="/?music=LeisureSuit"
+          ><button class="button">LeisureSuit</button></a
+        >
+      </p>
+      <p>
+        <a href="/?music=MissionImp"
+          ><button class="button">MissionImp</button></a
+        >
+      </p>
+    </div>
+  </body>
+</html>
+        """
+        return html
+    def start (self):
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.bind(('', 3000))
+        s.listen(2)
+        while True:
+            conn, addr = s.accept()
+            print('Got a connection from %s' % str(addr))
+            request = conn.recv(1024)
+            request = str(request)
+            print('Content = %s' % request)
+            music1 = request.find('/?music=SuperMario-MainTheme')
+            music2 = request.find('/?music=SuperMario-TitleMusic')
+            music3 = request.find('/?music=SMBtheme')
+            music4 = request.find('/?music=SMBwater')
+            music5 = request.find('/?music=SMBunderground')
+            music6 = request.find('/?music=Picaxe')
+            music7 = request.find('/?music=TheSimpsons')
+            music8 = request.find('/?music=Indiana')
+            music9 = request.find('/?music=TakeOnMe')
+            music10 = request.find('/?music=Entertainer')
+            music11 = request.find('/?music=Muppets')
+            music12 = request.find('/?music=Xfiles')
+            music13 = request.find('/?music=Looney')
+            music14 = request.find('/?music=20thCenFox')
+            music15 = request.find('/?music=Bond')
+            music16 = request.find('/?music=MASH')
+            music17 = request.find('/?music=Flinstones')
+            music18 = request.find('/?music=Jeopardy')
+            music19 = request.find('/?music=Gadget')
+            music20 = request.find('/?music=Smurfs')
+            music21 = request.find('/?music=MahnaMahna')
+            music22 = request.find('/?music=LeisureSuit')
+            music23 = request.find('/?music=MissionImp')
+
+            if music1 == 6:
+                print("Playing Super Mario - Main Theme")
+                self.music = "Super Mario - Main Theme"
+            elif music2 == 6:
+                print("Playing Super Mario - Title Music")
+                self.music = "Super Mario - Title Music"
+            elif music3 == 6:
+                print("Playing Super Mario Bros - Theme")
+                self.music = "SMBtheme"
+            elif music4 == 6:
+                print("Playing Super Mario Bros - Water")
+                self.music = "SMBwater"
+            elif music5 == 6:
+                print("Playing Super Mario Bros - Bunderground")
+                self.music = "SMBunderground"
+            elif music6 == 6:
+                print("Playing Picaxe")
+                self.music = "Picaxe"
+            elif music7 == 6:
+                print("Playing Simpsons")
+                self.music = "The Simpsons"
+            elif music8 == 6:
+                print("Playing Indiana")
+                self.music = "Indiana"
+            elif music9 == 6:
+                print("Playing TakeOnMe")
+                self.music = "TakeOnMe"
+            elif music10 == 6:
+                print("Playing Entertainer")
+                self.music = "Entertainer"
+            elif music11 == 6:
+                print("Playing Muppets")
+                self.music = "Muppets"
+            elif music12 == 6:
+                print("Playing Xfiles")
+                self.music = "Xfiles"
+            elif music13 == 6:
+                print("Playing Looney")
+                self.music = "Looney"
+            elif music14 == 6:
+                print("Playing 20thCenFox")
+                self.music = "20thCenFox"
+            elif music15 == 6:
+                print("Playing Bond")
+                self.music = "Bond"
+            elif music16 == 6:
+                print("Playing MASH")
+                self.music = "MASH"
+            elif music17 == 6:
+                print("Playing Flinstones")
+                self.music = "Flinstones"
+            elif music18 == 6:
+                print("Playing Jeopardy")
+                self.music = "Jeopardy"
+            elif music19 == 6:
+                print("Playing Gadget")
+                self.music = "Gadget"
+            elif music20 == 6:
+                print("Playing Smurfs")
+                self.music = "Smurfs"
+            elif music21 == 6:
+                print("Playing MahnaMahna")
+                self.music = "MahnaMahna"
+            elif music22 == 6:
+                print("Playing LeisureSuit")
+                self.music = "LeisureSuit"
+            elif music23 == 6:
+                print("Playing MissionImp")
+                self.music = "MissionImp"
+            response = self.web_page()
+            conn.send('HTTP/1.1 200 OK\n')
+            conn.send('Content-Type: text/html\n')
+            conn.send('Connection: close\n\n')
+            conn.sendall(response)
+            print('A música é: ', self.music)
+            if (self.music != ""):
+                playMusic = play(Pin(26, Pin.OUT), find(self.music))
+            conn.close()
+
+while True:
+    server = ESPServer()
+    server.connect("Redmi", "12345678")
+    server.start()
