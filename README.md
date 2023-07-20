@@ -70,7 +70,7 @@ https://github.com/RafaCaminag/CaixaDeMusica/assets/131477600/dfbc8468-6d95-4a33
 
 informações:
 - Requisitos do Código: nosso código se propõe a oferecer ao usuário a experiência de escolher uma música em um site em seu celular e, então, ouvi-la tal qual como em uma caixinha de música (pelo buzzer programado) com uma bailarina rodando (pelo motor rotativo). 
-- Estrutura de Arquivos e Funcionamento do Código: Das linhas 1-6 do código, importamos arquivos e funções necessárias para o pleno funcionamento do código. De 8-98, definimos as notas musicais e suas freqências que serão usadas no buzzer programável. De 100-184, definimos as músicas (programando a sequência de notas) e criamos as funções necessárias para que as músicas possam ser reproduzidas. De 186-190, criamos a função para escolher e tocar a música escolhida. A 192, conecta o motor a um pino da protoboard e o "ativa". Da 194-
+- Estrutura de Arquivos e Funcionamento do Código: Das linhas 1-6 do código, importamos arquivos e funções necessárias para o pleno funcionamento do código. De 8-98, definimos as notas musicais e suas freqências que serão usadas no buzzer programável. De 100-184, definimos as músicas (programando a sequência de notas) e criamos as funções necessárias para que as músicas possam ser reproduzidas. De 186-190, criamos a função para escolher e tocar a música escolhida. A 192, conecta o motor a um pino da protoboard e o "ativa". Da 194-416 e da 526-529, faz o ESP32 emitir sinal de rede para que possa ser conectado à rede e ao aparelho do usuário. Além disso, da 207-411, cria uma web page para a escolha da música pelo usuário. E, finalmente, da 417-524, conecta as partes anteriores do código, fazendo-as funcionar em conjunto.
 
 
 <br/>
