@@ -1,6 +1,6 @@
 <p align="center">
   <img src="https://media.elektor.com/media/catalog/product/cache/9cc822bfc6a57f9729d464b8b5e0e0df/j/o/joy-it-nodemcu-esp32-development-board_front.png" width="300" /><br/>
-Caixinha de Música <br/>
+Caixinha de Música - Projeto da Owlficinas de Microcontroladores <br/>
 </p>
 
 <br/>
@@ -41,7 +41,7 @@ O buzzer programável ("sem borrachinha") é um atuador analógico, uma vez que 
 Especificações Técnicas: tensão de operação entre 3,5 e 5 volts de beep contínuo.
 
 
-#### Motor Rf Rotativo
+#### Motor Rf Rotativo:
 
 O motor rotativo é um tipo de atuador eletromecânico que converte energia elétrica em movimento rotativo mecânico. No caso, é um atuador digital, pois funciona em valores binários, ou seja, ou ele está desligado ou ligado e rotacionando a uma velocidade específica.
 Especificações Técnicas: Motor DC com tensão de operação a 5,9V RF(radio-frequência)-300CA.
@@ -53,14 +53,20 @@ Especificações Técnicas: Motor DC com tensão de operação a 5,9V RF(radio-f
 Figura - Diagrama do circuito<br/>
   <img src= "https://cdn.discordapp.com/attachments/1131229981071134811/1131409755127173160/IMG-20230719-WA0034.jpg" /><br/>
 </p>
-Informações importantes sobre o circuito, onde colocá-lo, entre outros.
+Esse é o esqueleto do nosso circuito. Os fios amarelo, verde e preto que conectam a placa do ESP32 à protoboard e conectam pinos na própria protoboard são jumpers os quais conduzem corrente elétrica pelo circuito. Já tanto o buzzer quanto o motor possuem um fio pra ser a "alimentação", conduzindo a energia elétrica até eles que, como atuadores, a transformarão em energia mecânica e um segundo fio a fim de continuar o caminho da corrente elétrica. Assim, fecha-se o circuito (e o caminho da corrente e da energia, consequentemente) e conclue-se o funcionamento do sistema.
 <br/>
 
 <br/>
 
 ## :electric_plug: Funcionamento do sistema
 
-**Não esqueça: adicione um videozinho do sistema funcionando :)**
+Videozinho do sistema funcionando:
+
+
+
+https://github.com/RafaCaminag/CaixaDeMusica/assets/131477600/dfbc8468-6d95-4a33-b938-ffb1f3825fc7
+
+
 
 Liste informações como:
 - requisitos do código
