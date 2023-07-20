@@ -79,11 +79,16 @@ informações:
 
 ### Features implementadas
 
-- [x] Identificação da mudança de posição na cadeira *(exemplo de features que já estão funcionando no projeto)*
+- Motor rotativo para fazer o movimento da bailarina da caixinha de música tradicional;
+- Buzzer com beeps de diferentes frequências a fim de programar e reproduzir músicas;
+- Conectar o ESP32 a uma rede e criar um site para que o usuário que se conecte possa escolher a música (dentre as opções disponíveis) de maneira onlinne por meio de um dispositivo próprio.
 
 
 ### Features para incrementar no projeto
 
-- [ ] Possibilidade do usuário configurar o tempo e a temperatura para os alertas *(exemplo de features que as pessoas podem contribuir no projeto)*
+- Implementar uma telinha OLed a fim de fazer o nome da música escolhida ser exibida na tela;
+- Implementar um motor de velocidade de rotação programável;
+- Colocar de fato uma boneca para ser a bailarina da caixinha de música;
+- Realmente colocar o sistema dentro de uma caixinha.
 
 
