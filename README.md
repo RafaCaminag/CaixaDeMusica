@@ -43,14 +43,15 @@ Especificações Técnicas: tensão de operação entre 3,5 e 5 volts de beep co
 
 #### Motor Rf Rotativo
 
-
+O motor rotativo é um tipo de atuador eletromecânico que converte energia elétrica em movimento rotativo mecânico. No caso, é um atuador digital, pois funciona em valores binários, ou seja, ou ele está desligado ou ligado e rotacionando a uma velocidade específica.
+Especificações Técnicas: Motor DC com tensão de operação a 5,9V RF(radio-frequência)-300CA.
 
 
 ### Circuito
 
 <p align="center">
 Figura - Diagrama do circuito<br/>
-  <img src= ![WhatsApp Image 2023-07-19 at 16 22 37](https://github.com/RafaCaminag/CaixaDeMusica/assets/131477600/2027d958-ef54-41f1-92a4-34b8c070e793) /><br/>
+  <img src= "https://cdn.discordapp.com/attachments/1131229981071134811/1131409755127173160/IMG-20230719-WA0034.jpg" /><br/>
 </p>
 Informações importantes sobre o circuito, onde colocá-lo, entre outros.
 <br/>
