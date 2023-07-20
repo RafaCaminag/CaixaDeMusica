@@ -54,7 +54,6 @@ Figura - Diagrama do circuito<br/>
   <img src= "https://cdn.discordapp.com/attachments/1131229981071134811/1131409755127173160/IMG-20230719-WA0034.jpg" /><br/>
 </p>
 Esse é o esqueleto do nosso circuito. Os fios amarelo, verde e preto que conectam a placa do ESP32 à protoboard e conectam pinos na própria protoboard são jumpers os quais conduzem corrente elétrica pelo circuito. Já tanto o buzzer quanto o motor possuem um fio pra ser a "alimentação", conduzindo a energia elétrica até eles que, como atuadores, a transformarão em energia mecânica e um segundo fio a fim de continuar o caminho da corrente elétrica. Assim, fecha-se o circuito (e o caminho da corrente e da energia, consequentemente) e conclue-se o funcionamento do sistema.
-LAAAAAAAAAAAAAAAAAAAAAAAAA
 <br/>
 
 <br/>
@@ -69,11 +68,9 @@ https://github.com/RafaCaminag/CaixaDeMusica/assets/131477600/dfbc8468-6d95-4a33
 
 
 
-Liste informações como:
-- requisitos do código
-- estrutura de arquivos
-- qual o objetivo de cada arquivo/pedaço de código
-Não precisa ser muito detalhado, apenas o suficiente para que seu código seja entendível!
+informações:
+- Requisitos do Código: nosso código se propõe a oferecer ao usuário a experiência de escolher uma música em um site em seu celular e, então, ouvi-la tal qual como em uma caixinha de música (pelo buzzer programado) com uma bailarina rodando (pelo motor rotativo). 
+- Estrutura de Arquivos e Funcionamento do Código:
 
 
 <br/>
