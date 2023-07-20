@@ -72,11 +72,13 @@ Imagens do site para escolha da música:
 
 
 
-https://cdn.discordapp.com/attachments/1131229981071134811/1131601663673782302/IMG-20230720-WA0008.jpg
+![site comp](https://github.com/RafaCaminag/CaixaDeMusica/assets/131477600/daaa6aca-940e-4aa5-be7a-78b3ddd2d81e)
 
 
 
-https://cdn.discordapp.com/attachments/1131229981071134811/1131601663384354929/IMG-20230720-WA0009.jpg
+
+![site cel](https://github.com/RafaCaminag/CaixaDeMusica/assets/131477600/cc7a8f9a-ca04-414b-903e-1eeae685c039)
+
 
 
 
