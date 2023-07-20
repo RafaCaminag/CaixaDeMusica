@@ -7,7 +7,7 @@ Caixinha de Música <br/>
 
 ## :pushpin: Descrição
 
-Nosso projeto é uma caixinha de música em que um buzzer emite as notas musicais em forma de beep (leia-se "campainha") e uma bailarina gira a partir de um motor rotacional. O objetivo do projeto era trabalhar com música a partir de uma união entre o clássico da caixinha de música com o moderno das possibilidades que a tecnologia tem a oferecer. Assim, projetamos uma caixinha de som em que se escolhe a música a partir de um site no aparelho celular do usuário.
+Nosso projeto é uma caixinha de música em que um buzzer emite as notas musicais em forma de beep (leia-se "campainha") e uma bailarina gira a partir de um motor rotativo. O objetivo do projeto era trabalhar com música a partir de uma união entre o clássico da caixinha de música com o moderno das possibilidades que a tecnologia tem a oferecer. Assim, projetamos uma caixinha de som em que se escolhe a música a partir de um site no aparelho celular do usuário.
 
 
 <br/>
@@ -37,7 +37,8 @@ Nosso projeto é uma caixinha de música em que um buzzer emite as notas musicai
 
 #### Buzzer Ativo Programável:
 
-
+O buzzer programável ("sem borrachinha") é um atuador analógico, uma vez que transforma energia elétrica em ação mecânica (no caso, energia acústica) não binária (podendo programar diferentes frequências para os beeps/sons emitidos pelo buzzer, ou seja, por isso analógico).
+Especificações Técnicas: tensão de operação entre 3,5 e 5 volts de beep contínuo.
 
 
 #### Motor Rf Rotativo
