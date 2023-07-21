@@ -95,7 +95,7 @@ informações:
 
 - Motor rotativo para fazer o movimento da bailarina da caixinha de música tradicional;
 - Buzzer com beeps de diferentes frequências a fim de programar e reproduzir músicas;
-- Conectar o ESP32 a uma rede e criar um site para que o usuário que se conecte possa escolher a música (dentre as opções disponíveis) de maneira onlinne por meio de um dispositivo próprio.
+- Conectar o ESP32 a uma rede e criar um site para que o usuário que se conecte possa escolher a música (dentre as opções disponíveis) de maneira online por meio de um dispositivo próprio.
 
 
 ### Features para incrementar no projeto
